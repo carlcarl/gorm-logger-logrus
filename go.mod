@@ -1,4 +1,4 @@
-module github.com/nekomeowww/gorm-logrus
+module github.com/nekomeowww/gorm-logger-logrus
 
 go 1.14
 
