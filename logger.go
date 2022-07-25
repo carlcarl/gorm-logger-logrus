@@ -12,7 +12,7 @@ import (
 )
 
 type Options struct {
-	Logger                *logrus.Entry
+	Logger                *logrus.Logger
 	SkipErrRecordNotFound bool
 	Debug                 bool
 	SlowThreshold         time.Duration
@@ -26,7 +26,7 @@ type Logger struct {
 func New(opts Options) *Logger {
 	l := &Logger{Options: opts}
 	if l.Logger == nil {
-		l.Logger = logrus.NewEntry(logrus.New())
+		l.Logger = logrus.New()
 	}
 
 	return l
