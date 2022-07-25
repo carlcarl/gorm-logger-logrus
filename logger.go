@@ -1,4 +1,4 @@
-package gorm_logrus
+package gormloggerlogrus
 
 import (
 	"context"
