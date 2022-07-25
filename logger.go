@@ -11,40 +11,44 @@ import (
 	"gorm.io/gorm/utils"
 )
 
-type logger struct {
-	Logger *logrus.Entry
-
-	SlowThreshold         time.Duration
-	SourceField           string
+type Options struct {
+	Logger                *logrus.Entry
 	SkipErrRecordNotFound bool
 	Debug                 bool
+	SlowThreshold         time.Duration
+	SourceField           string
 }
 
-func New(l *logrus.Entry) *logger {
-	return &logger{
-		Logger:                l,
-		SkipErrRecordNotFound: true,
-		Debug:                 true,
+type Logger struct {
+	Options
+}
+
+func New(opts Options) *Logger {
+	l := &Logger{Options: opts}
+	if l.Logger == nil {
+		l.Logger = logrus.NewEntry(logrus.New())
 	}
-}
 
-func (l *logger) LogMode(gormlogger.LogLevel) gormlogger.Interface {
 	return l
 }
 
-func (l *logger) Info(ctx context.Context, s string, args ...interface{}) {
-	l.Logger.WithContext(ctx).Infof(s, args)
+func (l *Logger) LogMode(gormlogger.LogLevel) gormlogger.Interface {
+	return l
 }
 
-func (l *logger) Warn(ctx context.Context, s string, args ...interface{}) {
-	l.Logger.WithContext(ctx).Warnf(s, args)
+func (l *Logger) Info(ctx context.Context, s string, args ...interface{}) {
+	l.Logger.WithContext(ctx).Infof(s, args...)
 }
 
-func (l *logger) Error(ctx context.Context, s string, args ...interface{}) {
-	l.Logger.WithContext(ctx).Errorf(s, args)
+func (l *Logger) Warn(ctx context.Context, s string, args ...interface{}) {
+	l.Logger.WithContext(ctx).Warnf(s, args...)
 }
 
-func (l *logger) Trace(ctx context.Context, begin time.Time, fc func() (string, int64), err error) {
+func (l *Logger) Error(ctx context.Context, s string, args ...interface{}) {
+	l.Logger.WithContext(ctx).Errorf(s, args...)
+}
+
+func (l *Logger) Trace(ctx context.Context, begin time.Time, fc func() (string, int64), err error) {
 	elapsed := time.Since(begin)
 	sql, _ := fc()
 	fields := logrus.Fields{}
@@ -56,12 +60,10 @@ func (l *logger) Trace(ctx context.Context, begin time.Time, fc func() (string, 
 		l.Logger.WithContext(ctx).WithFields(fields).Errorf("%s [%s]", sql, elapsed)
 		return
 	}
-
 	if l.SlowThreshold != 0 && elapsed > l.SlowThreshold {
 		l.Logger.WithContext(ctx).WithFields(fields).Warnf("%s [%s]", sql, elapsed)
 		return
 	}
-
 	if l.Debug {
 		l.Logger.WithContext(ctx).WithFields(fields).Debugf("%s [%s]", sql, elapsed)
 	}

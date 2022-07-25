@@ -1,4 +1,5 @@
-# gorm-logrus
+# gorm-logger-logrus
+
 Logrus logger for gorm v2
 
 ```go
@@ -11,11 +12,17 @@ import (
 )
 
 func main() {
-  db, err := gorm.Open(sqlite.Open("test.db"), &gorm.Config{
-    Logger: logrus.NewEntry(logrus.New()),
-  })
-  if err != nil {
-    panic("failed to connect database")
-  }
+    db, err := gorm.Open(sqlite.Open("test.db"), &gorm.Config{
+        Logger: gormloggerlogrus.New(gormloggerlogrus.Options{
+            Logger:                logrus.NewEntry(logrus.New()),
+            SkipErrRecordNotFound: false,
+            Debug:                 false,
+            SlowThreshold:         time.Millisecond * 200,
+            SourceField:           "source",
+        }),
+    })
+    if err != nil {
+        panic("failed to connect database")
+    }
 }
 ```
