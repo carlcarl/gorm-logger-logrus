@@ -12,7 +12,7 @@ import (
 )
 
 type Options struct {
-	Logger *logrus.Logger
+	Logger *logrus.Entry
 
 	LogLevel                  gormlogger.LogLevel
 	IgnoreRecordNotFoundError bool
@@ -27,7 +27,7 @@ type Logger struct {
 func New(opts Options) *Logger {
 	l := &Logger{Options: opts}
 	if l.Logger == nil {
-		l.Logger = logrus.New()
+		l.Logger = logrus.NewEntry(logrus.New())
 	}
 	if l.LogLevel == 0 {
 		l.LogLevel = gormlogger.Silent
