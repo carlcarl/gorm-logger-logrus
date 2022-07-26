@@ -14,11 +14,11 @@ import (
 func main() {
     db, err := gorm.Open(sqlite.Open("test.db"), &gorm.Config{
         Logger: gormloggerlogrus.New(gormloggerlogrus.Options{
-            Logger:                logrus.NewEntry(logrus.New()),
-            SkipErrRecordNotFound: false,
-            Debug:                 false,
-            SlowThreshold:         time.Millisecond * 200,
-            SourceField:           "source",
+            Logger:                    logrus.NewEntry(logrus.New()),
+            LogLevel:                  gorm.Slient,
+            IgnoreRecordNotFoundError: false,
+            SlowThreshold:             time.Millisecond * 200,
+            FileWithLineNumField:      "file",
         }),
     })
     if err != nil {
