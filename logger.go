@@ -82,7 +82,7 @@ func (l *Logger) Trace(ctx context.Context, begin time.Time, fc func() (string, 
 
 	switch {
 	case err != nil && (!errors.Is(err, gorm.ErrRecordNotFound) || !l.IgnoreRecordNotFoundError) && l.LogLevel >= gormlogger.Error:
-		l.Logger.WithContext(ctx).WithFields(fields).Errorf("%s [%s]", sql, elapsed)
+		l.Logger.WithContext(ctx).WithFields(fields).WithError(err).Errorf("%s [%s]", sql, elapsed)
 	case l.SlowThreshold != 0 && elapsed > l.SlowThreshold && l.LogLevel >= gormlogger.Warn:
 		l.Logger.WithContext(ctx).WithFields(fields).Warnf("SLOW SQL >= %v, l.SlowThreshold %s [%s]", l.SlowThreshold, sql, elapsed)
 	case l.LogLevel == gormlogger.Info:
